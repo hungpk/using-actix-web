@@ -1,0 +1,20 @@
+[package]
+name = "using-actix-web"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.10.2"
+bcrypt = "0.17.0"
+chrono = { version = "0.4.40", features = ["serde"] }
+env_logger = "0.11.7"
+jsonwebtoken = "9.3.1"
+serde = {version = "1.0.219", features = ["derive"]}
+serde_json = {version = "*"}
+serde_with = { version = "3.12.0", features = ["json"] }
+sqlx = { version = "0.8.3", features = ["runtime-tokio-native-tls", "postgres", "chrono"] }
+[dev-dependencies]
+criterion = "0.5"
+actix-rt = "2.5.0"
+tokio = { version = "1", features = ["full"] }
+mockall = "0.13.1"
