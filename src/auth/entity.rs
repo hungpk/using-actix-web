@@ -1,5 +1,5 @@
-use jsonwebtoken::{ decode, encode, DecodingKey, EncodingKey, Header, Validation };
-use serde::{ Deserialize, Serialize };
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use serde::{Deserialize, Serialize};
 use std::env::var;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -16,7 +16,7 @@ impl TokenClaims {
         let claims = decode::<TokenClaims>(
             token,
             &DecodingKey::from_secret(secret.as_ref()),
-            &Validation::default()
+            &Validation::default(),
         );
         match claims {
             Ok(claims) => Ok(claims.claims),
@@ -26,7 +26,11 @@ impl TokenClaims {
 
     pub fn create_token(claims: &TokenClaims) -> Result<String, jsonwebtoken::errors::Error> {
         let secret = Self::get_secret();
-        let result = encode(&Header::default(), claims, &EncodingKey::from_secret(secret.as_ref()));
+        let result = encode(
+            &Header::default(),
+            claims,
+            &EncodingKey::from_secret(secret.as_ref()),
+        );
         match result {
             Ok(token) => Ok(token),
             Err(err) => Err(err),
@@ -41,12 +45,15 @@ impl TokenClaims {
 mod tests {
     use super::*;
     use std::env;
-    use std::time::{ SystemTime, UNIX_EPOCH };
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[test]
     fn test_create_and_decode_token() {
         // Setup: Create a sample set of claims
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
         let test_claims = TokenClaims {
             sub: "test_user".to_string(),
             iat: now,
@@ -88,7 +95,10 @@ mod tests {
     #[test]
     fn test_decode_expired_token() {
         // Setup: Create claims that are already expired.
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
         let expired_claims = TokenClaims {
             sub: "test_user".to_string(),
             iat: now - 7200, // Issued 2 hours ago
@@ -144,7 +154,10 @@ mod tests {
     #[test]
     fn test_decode_token_with_wrong_secret() {
         // Setup: create claims and token using secret "secret1"
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
         let test_claims = TokenClaims {
             sub: "test_user".to_string(),
             iat: now,
@@ -157,9 +170,8 @@ mod tests {
         env::set_var("JWT_SECRET", "secret2");
 
         // Action: try to decode token.
-        let result: Result<TokenClaims, jsonwebtoken::errors::Error> = TokenClaims::from_token(
-            &token
-        );
+        let result: Result<TokenClaims, jsonwebtoken::errors::Error> =
+            TokenClaims::from_token(&token);
 
         // Assertion: decoding should fail
         assert!(result.is_err());

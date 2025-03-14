@@ -24,7 +24,6 @@ in
   languages.rust.enable = true;
   pre-commit.hooks = {
     clippy.enable = true;
-    rustfmt.enable = true;
   };
   # https://devenv.sh/processes/
   #processes.cargo-watch.exec = "cargo watch -x run";
